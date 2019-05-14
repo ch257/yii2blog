@@ -95,6 +95,11 @@ class Article extends \yii\db\ActiveRecord
         return $this->hasMany(ArticleTag::className(), ['article_id' => 'id']);
     }
 
+    public function getCategory()
+    {
+        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
