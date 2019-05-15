@@ -78,7 +78,7 @@ class Article extends \yii\db\ActiveRecord
     }
 
     public function deleteImage() {
-            $imageUploadModel = new ImageUpload();
+        $imageUploadModel = new ImageUpload();
         $imageUploadModel->deleteCurrentImage($this->image);
     }
 
@@ -98,6 +98,15 @@ class Article extends \yii\db\ActiveRecord
     public function getCategory()
     {
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
+    }
+
+    public function saveCategory($category_id) {
+        $category = Category::findOne($category_id);
+        if ($category) {
+            $this->link('category', $category);
+            return true;
+        }
+        return false;
     }
 
     /**
