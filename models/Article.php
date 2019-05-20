@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\data\Pagination;
 
 /**
  * This is the model class for table "article".
@@ -136,6 +137,41 @@ class Article extends \yii\db\ActiveRecord
     public function getSelectedTags() {
         $selectedTags = $this->getTags()->select('id')->asArray()->all();
         return ArrayHelper::getColumn($selectedTags, 'id');
+    }
+
+    public function getDate() {
+        return Yii::$app->formatter->asdate($this->date);
+    }
+
+    public static function getAll($pageSize=5) {
+        // build a DB query to get all articles with status = 1
+        $query = Article::find();
+
+        // get the total number of articles (but do not fetch the article data yet)
+        $count = $query->count();
+
+        // create a pagination object with the total count
+        $pagination = new Pagination(['totalCount' => $count, 'pageSize' => $pageSize]);
+
+        // limit the query using the pagination and retrieve the articles
+        $articles = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        $data = [
+            'articles' => $articles,
+            'pagination' => $pagination
+        ];
+
+        return $data;
+    }
+
+    public static function getPopular() {
+        return Article::find()->orderBy('viewed desc')->limit(3)->all();
+    }
+
+    public static function getRecent() {
+        return Article::find()->orderBy('date desc')->limit(4)->all();
     }
 
     /**
